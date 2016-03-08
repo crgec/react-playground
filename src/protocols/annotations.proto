@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+message Session {
+	int32 version = 1;
+	string clientId = 2;
+
+	repeated CanvasObject canvasObjects = 3;
+}
+
+message CanvasObject {
+	enum CanvasType {
+		UNKNOWN = 0;
+		STROKE = 1;
+		TEXT = 3;
+		VOICE_NOTE = 4;
+	}
+	enum Status {
+		ACTIVE = 0;
+		INACTIVE = 1;
+	}
+	enum ShareStatus {
+		NOT_SHARED = 0;
+		SHARED = 1;
+	}
+
+	CanvasType type = 1;
+	Status status = 2;
+	ShareStatus shareStatus = 3;
+	int32 page = 4;
+	int64 localId = 5;
+
+	oneof data {
+		Stroke stroke = 6;
+		Comment comment = 7;
+		Text textOnPage = 8;
+		VoiceNote voiceNote = 9;
+	}
+
+	message Stroke {
+		LayerInfo layerInfo = 1;
+		Pen pen = 2;
+
+		message Pen {
+			enum Mask {
+				NONE = 0;
+				ERASER = 1;
+			}
+			Mask mask = 1;
+			RGBColor rgbColor = 2;
+			float thickness = 3;
+		}
+
+		repeated Path path = 3;
+
+		message Path {
+			int32 curveType = 1;
+			float x1 = 2;
+			float y1 = 3;
+			float x2 = 4;
+			float y2 = 5;
+			float x3 = 6;
+			float y3 = 7;
+		}
+	}
+
+	message Comment {
+		LayerInfo layerInfo = 1;
+	}
+
+	message Text {
+		LayerInfo layerInfo = 1;
+	}
+
+	message VoiceNote {
+		LayerInfo layerInfo = 1;
+	}
+
+	message LayerInfo {
+		int32 layerNumber = 1;
+		sint32 createdTimestamp = 2;
+		sint32 updatedTimestamp = 3;
+	}
+}
+
+message RGBColor {
+	int32 red = 1;
+	int32 green = 2;
+	int32 blue = 3;
+}

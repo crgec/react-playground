@@ -8,6 +8,7 @@
  */
 
 import React, { Component, PropTypes } from 'react';
+import Annotation from '../Annotation';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ContentPage.scss';
 
@@ -30,6 +31,7 @@ class ContentPage extends Component {
   render() {
     return (
       <div className={s.root}>
+        <Annotation />
         <div className={s.container}>
           {this.props.path === '/' ? null : <h1>{this.props.title}</h1>}
           <div dangerouslySetInnerHTML={{ __html: this.props.content || '' }} />
