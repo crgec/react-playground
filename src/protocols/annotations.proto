@@ -1,44 +1,45 @@
 syntax = "proto3";
 
+option java_package = "com.snapfin.andro.domain.model";
+
+import "google/protobuf/timestamp.proto";
+
 message Session {
 	int32 version = 1;
 	string clientId = 2;
-
 	repeated CanvasObject canvasObjects = 3;
 }
 
 message CanvasObject {
 	enum CanvasType {
-		UNKNOWN = 0;
-		STROKE = 1;
-		TEXT = 3;
+		NONE = 0;
+		INK = 1;
+		COMMENT = 2;
+    TEXT_ON_PAGE = 3;
 		VOICE_NOTE = 4;
-	}
-	enum Status {
-		ACTIVE = 0;
-		INACTIVE = 1;
-	}
-	enum ShareStatus {
-		NOT_SHARED = 0;
-		SHARED = 1;
 	}
 
 	CanvasType type = 1;
-	Status status = 2;
-	ShareStatus shareStatus = 3;
-	int32 page = 4;
-	int64 localId = 5;
+  int64 id = 2;
+	bool active = 3;
+	bool shared = 4;
+	int32 page = 5;
+  Point position = 6;
+  int32 layer = 7;
+  google.protobuf.Timestamp createdTimeStamp = 8;
+  google.protobuf.Timestamp updatedTimeStamp = 9;
+  google.protobuf.Timestamp publishedTimeStamp = 10;
 
 	oneof data {
-		Stroke stroke = 6;
-		Comment comment = 7;
-		Text textOnPage = 8;
-		VoiceNote voiceNote = 9;
+		Stroke stroke = 11;
+		Comment comment = 12;
+		Text textOnPage = 13;
+		VoiceNote voiceNote = 14;
 	}
 
 	message Stroke {
-		LayerInfo layerInfo = 1;
-		Pen pen = 2;
+		Pen pen = 1;
+    repeated Path path = 2;
 
 		message Pen {
 			enum Mask {
@@ -50,35 +51,34 @@ message CanvasObject {
 			float thickness = 3;
 		}
 
-		repeated Path path = 3;
-
 		message Path {
 			int32 curveType = 1;
-			float x1 = 2;
-			float y1 = 3;
-			float x2 = 4;
-			float y2 = 5;
-			float x3 = 6;
-			float y3 = 7;
+      Point point1 = 2;
+      Point point2 = 3;
+      Point point3 = 4;
 		}
 	}
 
 	message Comment {
-		LayerInfo layerInfo = 1;
+    string comment = 1;
 	}
 
 	message Text {
-		LayerInfo layerInfo = 1;
+    Dimensions dimensions = 1;
+    float fontSize = 2;
+    TextAlignment textAlignment = 3;
+    RGBColor textColor = 4;
+    string text = 5;
+
+    enum TextAlignment {
+      LEFT = 0;
+      CENTER = 1;
+      RIGHT = 2;
+    }    
 	}
 
 	message VoiceNote {
-		LayerInfo layerInfo = 1;
-	}
-
-	message LayerInfo {
-		int32 layerNumber = 1;
-		sint32 createdTimestamp = 2;
-		sint32 updatedTimestamp = 3;
+    string audioAttachmentId = 1;
 	}
 }
 
@@ -86,4 +86,14 @@ message RGBColor {
 	int32 red = 1;
 	int32 green = 2;
 	int32 blue = 3;
+}
+
+message Point {
+  float x = 1;
+  float y = 2;
+}
+
+message Dimensions {
+  float width = 1;
+  float height = 2;
 }
